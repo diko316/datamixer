@@ -24,7 +24,7 @@
   "homepage": "https://github.com/diko316/datamixer#readme",
   "dependencies": {
     "es5-oop": "0.0.2",
-    "type-caster": "0.0.7",
+    "type-caster": "0.1.0",
     "bluebird": "^3.4.0"
   }
 }
