@@ -17,7 +17,11 @@ model.define('Session', {
     },
     '@create': [
         function (data) {
+            console.log('check!');
+            console.log(this);
             console.log(data);
+            console.log('end check!');
+            return data;
         }]
 });
 
@@ -37,4 +41,8 @@ console.log(model('Session', {
                                 }
                             }).toString());
 
-console.log(model('Session').toString());
+model('Session').$create({name: 'shit'}).then(function (data) {
+    console.log('data passed');
+    console.log(data);
+   return data;
+});

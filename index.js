@@ -10,6 +10,7 @@ var EXPORTS = instantiate,
 
 function define(name, config) {
     var list = DEFINITIONS,
+        processMgr = PROCESSOR,
         type = TYPE,
         O = Object.prototype,
         A = Array,
@@ -78,14 +79,14 @@ function define(name, config) {
             else if (methodRe.test(key)) {
                 m = key.match(methodRe);
                 type = m[1];
-                if (typeof item === 'string') {
+                if (typeof item === 'string' ||
+                    item instanceof F ||
+                    processMgr.is(item)) {
                     item = [item];
                 }
+
                 if (item instanceof A) {
-                    properties['$' + type] = create(type, item);
-                }
-                else if (item instanceof F) {
-                    properties['$' + type] = item;
+                    properties['$' + type] = create(item);
                 }
                 else {
                     throw new Error('[' +
@@ -215,48 +216,34 @@ function instantiate(name, data) {
 
 }
 
-function createMethod(name, items) {
+function createMethod(items) {
+    var processMgr = PROCESSOR,
+        F = Function,
+        processor = null;
+    var c, l, item;
+    
+    for (c = -1, l = items.length; l--;) {
+        item = items[++c];
+        if (typeof item === 'string') {
+            item = processMgr(item);
+            if (!item) {
+                throw new Error('Unable to find method [' + item + ']');
+            }
+        }
+        else if (!(item instanceof F) && !processMgr.is(item)) {
+            throw new Error('Unable to resolve processor method');
+        }
+        
+        processor = processor ?
+                        processor.pipe(item) : processMgr.create(item);
+                        
+    }
     
     return function () {
-        
+        return processor.$runner.apply(this, arguments);
     };
     
     
-    //var F = Function,
-    //    processMgr = PROCESSOR,
-    //    processor = void(0);
-    //var c, l, item, runner;
-    //
-    //function method() {
-    //    /*jshint validthis:true */
-    //    return processor.run(this, arguments);
-    //}
-    //
-    //for (c = -1, l = items.length; l--;) {
-    //    item = items[++c];
-    //    runner = null;
-    //    if (typeof item === 'string') {
-    //        runner = processMgr(item);
-    //    }
-    //    else if (item instanceof F) {
-    //        runner = F;
-    //    }
-    //    else {
-    //        throw new Error('[' + name + '] method contains invalid processor');
-    //    }
-    //    if (processor) {
-    //        processor.pipe(runner);
-    //    }
-    //    else {
-    //        processor = processMgr.instantiate(runner);
-    //    }
-    //}
-    //
-    //if (!processor) {
-    //    throw new Error('[' + name + '] method definition is empty or ' +
-    //                'unable to generate processors');
-    //}
-    //return method;
 }
 
 
