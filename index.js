@@ -216,41 +216,47 @@ function instantiate(name, data) {
 }
 
 function createMethod(name, items) {
-    var F = Function,
-        processMgr = PROCESSOR,
-        processor = void(0);
-    var c, l, item, runner;
     
-    function method() {
-        /*jshint validthis:true */
-        return processor.run(this, arguments);
-    }
+    return function () {
+        
+    };
     
-    for (c = -1, l = items.length; l--;) {
-        item = items[++c];
-        runner = null;
-        if (typeof item === 'string') {
-            runner = processMgr(item);
-        }
-        else if (item instanceof F) {
-            runner = F;
-        }
-        else {
-            throw new Error('[' + name + '] method contains invalid processor');
-        }
-        if (processor) {
-            processor.pipe(runner);
-        }
-        else {
-            processor = processMgr.instantiate(runner);
-        }
-    }
     
-    if (!processor) {
-        throw new Error('[' + name + '] method definition is empty or ' +
-                    'unable to generate processors');
-    }
-    return method;
+    //var F = Function,
+    //    processMgr = PROCESSOR,
+    //    processor = void(0);
+    //var c, l, item, runner;
+    //
+    //function method() {
+    //    /*jshint validthis:true */
+    //    return processor.run(this, arguments);
+    //}
+    //
+    //for (c = -1, l = items.length; l--;) {
+    //    item = items[++c];
+    //    runner = null;
+    //    if (typeof item === 'string') {
+    //        runner = processMgr(item);
+    //    }
+    //    else if (item instanceof F) {
+    //        runner = F;
+    //    }
+    //    else {
+    //        throw new Error('[' + name + '] method contains invalid processor');
+    //    }
+    //    if (processor) {
+    //        processor.pipe(runner);
+    //    }
+    //    else {
+    //        processor = processMgr.instantiate(runner);
+    //    }
+    //}
+    //
+    //if (!processor) {
+    //    throw new Error('[' + name + '] method definition is empty or ' +
+    //                'unable to generate processors');
+    //}
+    //return method;
 }
 
 
@@ -260,6 +266,7 @@ function createMethod(name, items) {
 module.exports = EXPORTS['default'] = EXPORTS;
 EXPORTS.define = define;
 EXPORTS.type = TYPE;
+EXPORTS.processor = PROCESSOR; 
 
 // define types
 TYPE.define('record', require('./type/record.js'));
