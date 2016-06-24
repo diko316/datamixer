@@ -67,8 +67,6 @@ Processor.prototype = {
         my = this.$runner;
         return new Class(
                     function () {
-                        console.log('method call');
-                        console.log(this);
                         return my.apply(this, arguments).
                                 then(next.bind(this));
                     });

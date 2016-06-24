@@ -86,7 +86,7 @@ function define(name, config) {
                 }
 
                 if (item instanceof A) {
-                    properties['$' + type] = create(item);
+                    properties[type] = create(item);
                 }
                 else {
                     throw new Error('[' +

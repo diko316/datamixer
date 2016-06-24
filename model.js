@@ -73,25 +73,26 @@ function Model(defaultValue) {
     var me = this,
         type = me['@type'];
         
-    me['@meta'] = {
-        raw: defaultValue,
-        data: arguments.length ?
-                    type.cast(defaultValue) : type.cast()
-    };
-    
+    this.raw = defaultValue;
+    this.data = arguments.length ?
+                    type.cast(defaultValue) : type.cast();
 }
 
 Model.prototype = {
     
     '@type': TYPE('default'),
-    '@meta': void(0),
+    data: void(0),
+    raw: void(0),
     
     constructor: Model,
     
+    on: function () {
+        
+    },
+    
     valueOf: function (raw) {
-        var meta = this['@meta'];
         return raw === true ?
-                    meta.raw : meta.data;
+                    this.raw : this.data;
     },
     
     toString: function (raw) {

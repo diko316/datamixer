@@ -41,7 +41,7 @@ console.log(model('Session', {
                                 }
                             }).toString());
 
-model('Session').$create({name: 'shit'}).then(function (data) {
+model('Session').create({name: 'shit'}).then(function (data) {
     console.log('data passed');
     console.log(data);
    return data;
