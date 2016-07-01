@@ -73,8 +73,14 @@ function formatFail(data) {
 }
 
 function process(data) {
-    
-    if (toString.call(data) === '[object Object]') {
+    switch (toString.call(data)) {
+    case '[object String]':
+        data = {
+            url: data,
+            method: 'get'
+        };
+    /* falls through */
+    case '[object Object]':
         return HTTP(data).then(formatSuccess, formatFail);
     }
 

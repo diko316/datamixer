@@ -2,6 +2,7 @@
 
 var TYPE = require('type-caster'),
     UTIL = require('util'),
+    INTERESTING = require('interesting'),
     EXPORTS = {},
     MODELS = {};
     
@@ -86,10 +87,6 @@ Model.prototype = {
     
     constructor: Model,
     
-    on: function () {
-        
-    },
-    
     valueOf: function (raw) {
         return raw === true ?
                     this.raw : this.data;
@@ -119,5 +116,6 @@ EXPORTS.get = get;
 EXPORTS.has = has;
 EXPORTS.is = is;
 EXPORTS.createConstructor = createConstructor;
+EXPORTS.events = INTERESTING();
 
 module.exports = EXPORTS;

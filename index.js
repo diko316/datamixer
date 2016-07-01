@@ -2,7 +2,7 @@
 
 var EXPORTS = instantiate,
     TYPE = require('type-caster'),
-    PROCESSOR = require('./processor.js'),
+    PROCESSOR = require('tee-back'),
     MODEL = require('./model.js'),
     DEFINITIONS = {},
     MODEL_RE = /^[A-Z]/,
@@ -50,7 +50,7 @@ function define(name, config) {
                     }
                     else {
                         throw new Error('[' +
-                                        name +
+                                        item +
                                         '] type cannot be resolved');
                     }
                 }
@@ -63,7 +63,7 @@ function define(name, config) {
                 
                 if (!type.is(item)) {
                     throw new Error('[' +
-                                    name +
+                                    item +
                                     '] type definition is invalid');
                 }
                 definition.type = properties['@type'] = item;
@@ -79,6 +79,7 @@ function define(name, config) {
             else if (methodRe.test(key)) {
                 m = key.match(methodRe);
                 type = m[1];
+                
                 if (typeof item === 'string' ||
                     item instanceof F ||
                     processMgr.is(item)) {
@@ -86,7 +87,7 @@ function define(name, config) {
                 }
 
                 if (item instanceof A) {
-                    properties[type] = create(item);
+                    properties[type] = create(name, type, item);
                 }
                 else {
                     throw new Error('[' +
@@ -95,7 +96,7 @@ function define(name, config) {
                 }
             }
         }
-        
+       
         list[name] = definition;
         
     }
@@ -216,31 +217,44 @@ function instantiate(name, data) {
 
 }
 
-function createMethod(items) {
+function subscribe() {
+    var events = MODEL.events;
+    return events.subscribe.apply(events, arguments);
+}
+
+function createMethod(name, method, items) {
     var processMgr = PROCESSOR,
-        F = Function,
         processor = null;
     var c, l, item;
     
     for (c = -1, l = items.length; l--;) {
         item = items[++c];
-        if (typeof item === 'string') {
-            item = processMgr(item);
-            if (!item) {
-                throw new Error('Unable to find method [' + item + ']');
-            }
+        // resolve processor
+        if (processor) {
+            processor = processor.pipe(item);
+            
         }
-        else if (!(item instanceof F) && !processMgr.is(item)) {
-            throw new Error('Unable to resolve processor method');
+        else {
+            processor = processMgr(item);
         }
-        
-        processor = processor ?
-                        processor.pipe(item) : processMgr.create(item);
+        if (!processor) {
+            throw new Error(
+                    'Unable to resolve processor method [' + item + ']');
+        }
                         
     }
     
     return function () {
-        return processor.$runner.apply(this, arguments);
+        var args = Array.prototype.slice.call(arguments);
+        
+        args.splice(1, 0, {
+                            instance: this,
+                            name: name,
+                            method: method
+                        });
+        
+        // must accept meta
+        return processor.valueOf().apply(this, args);
     };
     
     
@@ -253,12 +267,17 @@ function createMethod(items) {
 module.exports = EXPORTS['default'] = EXPORTS;
 EXPORTS.define = define;
 EXPORTS.type = TYPE;
-EXPORTS.processor = PROCESSOR; 
+EXPORTS.subscribe = subscribe;
 
 // define types
+TYPE.define('integer', require('./type/integer.js'));
 TYPE.define('record', require('./type/record.js'));
 
-
+// define processors
+PROCESSOR.define('data.fork', require('./processor/data/fork.js'));
+PROCESSOR.define('data.validate', require('./processor/data/validate.js'));
+PROCESSOR.define('event.dispatch', require('./processor/event/dispatch.js'));
+PROCESSOR.define('http.request', require('./processor/http/request.js'));
 
 // register base model type
 MODEL.register('Base', MODEL.Model);
