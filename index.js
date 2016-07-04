@@ -5,7 +5,7 @@ var EXPORTS = instantiate,
     PROCESSOR = require('tee-back'),
     MODEL = require('./model.js'),
     DEFINITIONS = {},
-    MODEL_RE = /^[A-Z]/,
+    MODEL_RE = /^[A-Z][a-zA-Z0-9\-\_]+(\.[A-Z][a-zA-Z0-9\-\_]+)*$/,
     METHOD_RE = /^\@([a-zA-Z\_][a-zA-Z0-9\_]*)$/;
 
 function define(name, config) {
@@ -21,85 +21,95 @@ function define(name, config) {
         
     var definition, m, key, item, hasOwn, properties, requires, create;
     
-    if (modelRe.test(name) &&
-        !list.hasOwnProperty(name) &&
-        toString.call(config) === '[object Object]') {
-        create = createMethod;
-        hasOwn = O.hasOwnProperty;
-        definition = {
-            name: name,
-            type: null,
-            extend: null,
-            declared: false,
-            requires: requires = [],
-            properties: properties = {}
-        };
-        
-        for (key in config) {
-            if (!hasOwn.call(config, key)) {
-                continue;
-            }
-            item = config[key];
-            // create type
-            if (key === 'type') {
-                // cast non-model type
-                if (item && typeof item === 'string' &&
-                    !modelRe.test(item)) {
-                    if (type.has(item)) {
-                        item = type(item);
-                    }
-                    else {
-                        throw new Error('[' +
-                                        item +
-                                        '] type cannot be resolved');
-                    }
-                }
-                else if (toString.call(item) === '[object Object]') {
-                    // create object type
-                    if (!type.is(item)) {
-                        item = type('object').schema(item);
-                    }
-                }
-                
-                if (!type.is(item)) {
-                    throw new Error('[' +
-                                    item +
-                                    '] type definition is invalid');
-                }
-                definition.type = properties['@type'] = item;
-                
-            }
-            // extend
-            else if (key === 'extend') {
-                if (item && typeof item === 'string') {
-                    requires[requires.length] = definition.extend = item;
-                }
-            }
-            // create method
-            else if (methodRe.test(key)) {
-                m = key.match(methodRe);
-                type = m[1];
-                
-                if (typeof item === 'string' ||
-                    item instanceof F ||
-                    processMgr.is(item)) {
-                    item = [item];
-                }
-
-                if (item instanceof A) {
-                    properties[type] = create(name, type, item);
+    if (!modelRe.test(name)) {
+        throw new Error('[name] parameter is invalid');
+    }
+    
+    if (list.hasOwnProperty(name)) {
+        throw new Error('[' + name + '] model is already defined');
+    }
+    
+    if (toString.call(config) !== '[object Object]') {
+        throw new Error('[config] parameter should be a valid config object');
+    }
+    
+    
+    create = createMethod;
+    hasOwn = O.hasOwnProperty;
+    definition = {
+        name: name,
+        type: null,
+        extend: null,
+        declared: false,
+        requires: requires = [],
+        properties: properties = {}
+    };
+    
+    for (key in config) {
+        if (!hasOwn.call(config, key)) {
+            continue;
+        }
+        item = config[key];
+        // create type
+        if (key === 'type') {
+            // cast non-model type
+            if (item && typeof item === 'string' &&
+                !modelRe.test(item)) {
+                if (type.has(item)) {
+                    item = type(item);
                 }
                 else {
                     throw new Error('[' +
-                                        type +
-                                        '] method definition is invalid');
+                                    item +
+                                    '] type cannot be resolved');
                 }
             }
+            else if (toString.call(item) === '[object Object]') {
+                // create object type
+                if (!type.is(item)) {
+                    item = type('object').schema(item);
+                }
+            }
+            
+            if (!type.is(item)) {
+                throw new Error('[' +
+                                item +
+                                '] type definition is invalid');
+            }
+            definition.type = properties['@type'] = item;
+            
         }
-       
-        list[name] = definition;
-        
+        // extend
+        else if (key === 'extend') {
+            if (item && typeof item === 'string') {
+                requires[requires.length] = definition.extend = item;
+            }
+        }
+        // create method
+        else if (methodRe.test(key)) {
+            m = key.match(methodRe);
+            type = m[1];
+            
+            if (typeof item === 'string' ||
+                item instanceof F ||
+                processMgr.is(item)) {
+                item = [item];
+            }
+
+            if (item instanceof A) {
+                properties[type] = create(name, type, item);
+            }
+            else {
+                throw new Error('[' +
+                                    type +
+                                    '] method definition is invalid');
+            }
+        }
     }
+   
+    list[name] = definition;
+        
+    
     
     return EXPORTS;
 }
@@ -193,6 +203,21 @@ function declare(name) {
     return void(0);
 }
 
+function exist(name) {
+    var definition = getDefinition(name);
+    
+    if (defintion) {
+        
+        // try declaring
+        declare(name);
+
+        return defintion.declared;
+    
+    }
+    
+    return false;
+}
+
 function getDefinition(name) {
     var list = DEFINITIONS;
     return list.hasOwnProperty(name) ? list[name] : void(0);
@@ -268,6 +293,8 @@ module.exports = EXPORTS['default'] = EXPORTS;
 EXPORTS.define = define;
 EXPORTS.type = TYPE;
 EXPORTS.subscribe = subscribe;
+EXPORTS.exist = exist;
+EXPORTS.Class = MODEL.Model;
 
 // define types
 TYPE.define('text', require('./type/text.js'));

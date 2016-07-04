@@ -75,8 +75,13 @@ function Model(defaultValue) {
         type = me['@type'];
         
     this.raw = defaultValue;
-    this.data = arguments.length ?
-                    type.cast(defaultValue) : type.cast();
+    if (arguments.length && type.validate(defaultValue)) {
+        this.data = type.cast(defaultValue);
+    }
+    else {
+        this.data = type.cast();
+    }
+
 }
 
 Model.prototype = {

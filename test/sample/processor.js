@@ -1,7 +1,7 @@
 'use strict';
 
 
-var model = require('../index.js');
+var model = require('../../index.js');
 var session;
 
 
@@ -19,7 +19,6 @@ model.define('Session', {
     },
     '@create': [
         function (data) {
-            console.log('method:', this.$processing);
             console.log(data);
             return data;
         },
