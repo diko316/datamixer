@@ -3,9 +3,7 @@
 var type = require('type-caster'),
     number = type('number'),
     NUMERIC_RE = /^[1-9]+[0-9]*(\.[0-9]+)?$/;
-    
-    
-    
+
 module.exports = number.extend({
             
             cast: function (data) {

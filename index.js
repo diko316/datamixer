@@ -270,7 +270,11 @@ EXPORTS.type = TYPE;
 EXPORTS.subscribe = subscribe;
 
 // define types
+TYPE.define('text', require('./type/text.js'));
+TYPE.define('numeric', require('./type/numeric.js'));
 TYPE.define('integer', require('./type/integer.js'));
+TYPE.define('float', require('./type/float.js'));
+TYPE.define('enum', require('./type/enum.js'));
 TYPE.define('record', require('./type/record.js'));
 
 // define processors
