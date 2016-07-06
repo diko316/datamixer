@@ -4,7 +4,7 @@
   "description": "Pluggable data mixer and type juggler",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/index.js"
+    "test": "node_modules/mocha/bin/mocha ./test/index.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,6 @@
     "http-status-code": "^2.0.1",
     "interesting": "^0.0.3",
     "tee-back": "^0.0.6",
-    "type-caster": "^0.1.2"
+    "type-caster": "^0.1.3"
   }
 }

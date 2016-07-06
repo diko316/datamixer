@@ -4,14 +4,14 @@ describe('datamixer(name, defaultValue) default method',
     function () {
         
         var assert = require('chai').assert,
-            Model = use("index.js"),
+            MODEL = use("index.js"),
             defaultValue = {
                 authToken: '00authtoken01',
                 role: 'admin',
                 userId: 101
             };
         
-        Model.define('Session', {
+        MODEL.define('Session', {
                 type: Model.type('object').
                         schema({
                             authToken: 'string',
@@ -28,11 +28,11 @@ describe('datamixer(name, defaultValue) default method',
            ' [defaultValue] mixed type parameters.' +
            ' then returns an instance of Model.',
             function () {
-                var session = Model('Session', defaultValue),
+                var session = MODEL('Session', defaultValue),
                     raw = session.valueOf(true),
                     data = session.valueOf();
                 
-                assert(session instanceof Model.Class,
+                assert(session instanceof MODEL.Class,
                     'returned object must be an instance of Model');
                 
                 assert(raw.authToken === data.authToken,
