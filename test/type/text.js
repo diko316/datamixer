@@ -11,3 +11,4 @@ describe('"text" TYPE',
         it('should validate [data:string] if valid string matches the configured pattern');
         
     });
+
