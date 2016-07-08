@@ -206,16 +206,20 @@ function declare(name) {
 function exist(name) {
     var definition = getDefinition(name);
     
-    if (defintion) {
+    if (definition) {
         
         // try declaring
         declare(name);
 
-        return defintion.declared;
+        return definition.declared;
     
     }
     
     return false;
+}
+
+function is(instance) {
+    return instance instanceof MODEL.Model;
 }
 
 function getDefinition(name) {
@@ -294,7 +298,7 @@ EXPORTS.define = define;
 EXPORTS.type = TYPE;
 EXPORTS.subscribe = subscribe;
 EXPORTS.exist = exist;
-EXPORTS.Class = MODEL.Model;
+EXPORTS.is = is;
 
 // define types
 TYPE.define('text', require('./type/text.js'));

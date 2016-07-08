@@ -1,10 +1,10 @@
 'use strict';
 
-describe('DATAMIXER.define([name:string], [config:object]):object method',
+describe('DATAMIXER.define([name:string], [config:object]):object',
     function () {
         
         var MODEL = use("index"),
-            modelName = 'TestModel',
+            modelName = 'TestDefine',
             modelConfig = {
                 '@create': [
                     function (data) {
@@ -33,7 +33,7 @@ describe('DATAMIXER.define([name:string], [config:object]):object method',
                 
                 fail = false;
                 try {
-                    MODEL.define('TestModel1', true);
+                    MODEL.define('TestDefine1', true);
                 }
                 catch (e) {
                     fail = e;
@@ -44,7 +44,7 @@ describe('DATAMIXER.define([name:string], [config:object]):object method',
                 
                 fail = false;
                 try {
-                    MODEL.define('TestModel1', 'config');
+                    MODEL.define('TestDefine1', 'config');
                 }
                 catch (e) {
                     fail = e;

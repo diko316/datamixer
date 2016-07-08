@@ -1,6 +1,6 @@
 'use strict';
 
-describe('DATAMIXER([name:string], [defaultValue:Mixed]):object default method',
+describe('DATAMIXER([name:string], [defaultValue:Mixed]):object',
     function () {
         
         var MODEL = use("index.js"),
@@ -10,7 +10,7 @@ describe('DATAMIXER([name:string], [defaultValue:Mixed]):object default method',
                 userId: 101
             };
         
-        MODEL.define('Session', {
+        MODEL.define('Default', {
                 type: MODEL.type('object').
                         schema({
                             authToken: 'string',
@@ -27,11 +27,11 @@ describe('DATAMIXER([name:string], [defaultValue:Mixed]):object default method',
            ' [defaultValue] mixed type parameters.' +
            ' then returns an instance of Model.',
             function () {
-                var session = MODEL('Session', defaultValue),
+                var session = MODEL('Default', defaultValue),
                     raw = session.valueOf(true),
                     data = session.valueOf();
                 
-                assert(session instanceof MODEL.Class,
+                assert(MODEL.is(session),
                     'returned object must be an instance of Model');
                 
                 assert(raw.authToken === data.authToken,

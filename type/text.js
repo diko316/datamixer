@@ -30,11 +30,14 @@ module.exports = string.extend({
         
         var valid = string.validate(value);
         
-        if (!valid.error && this.config.pattern.test(value)) {
-            state.error = false;
+        if (valid.error) {
+            state.error = valid.error;
+        }
+        else if (this.config.pattern.test(value)) {
+            state.error.pattern = 'must match with the given text pattern';
         }
         else {
-            state.error = valid.error;
+            state.error = false;
         }
         
     },
