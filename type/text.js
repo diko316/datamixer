@@ -33,7 +33,7 @@ module.exports = string.extend({
         if (valid.error) {
             state.error = valid.error;
         }
-        else if (this.config.pattern.test(value)) {
+        else if (!this.config.pattern.test(value)) {
             state.error.pattern = 'must match with the given text pattern';
         }
         else {

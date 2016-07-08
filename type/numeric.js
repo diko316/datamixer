@@ -18,8 +18,6 @@ module.exports = number.extend({
                         return data;
                     }
                     break;
-                case 'boolean':
-                    return data ? 1 : 0;
                 }
                 return void(0);
             },
