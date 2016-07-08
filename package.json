@@ -33,6 +33,6 @@
     "http-status-code": "^2.0.1",
     "interesting": "^0.0.3",
     "tee-back": "^0.0.6",
-    "type-caster": "^0.1.3"
+    "type-caster": "^0.1.5"
   }
 }

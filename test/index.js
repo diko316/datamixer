@@ -1,23 +1,20 @@
 'use strict';
 
-//require('./sample/core.js');
 
-//require('./sample/processor.js');
-//require('./sample/http.js');
-
-
-//console.log('paths', module.filename);
-//console.log('me ', require('index.js'));
 var path = require('path'),
     mainPath = path.resolve(".");
 
+global.assert = require('chai').assert;
 global.use = function (id) {
     return require(path.resolve(mainPath, id));
 };
 
+describe('datamixer api tests',
+    function () {
+        require('./api/default.js');
+        require('./api/define.js');
+        require('./api/subscribe.js');
+    });
 
-require('./api/get.js');
-
-require('./api/define.js');
 
 

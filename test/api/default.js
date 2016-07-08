@@ -1,10 +1,9 @@
 'use strict';
 
-describe('datamixer(name, defaultValue) default method',
+describe('DATAMIXER([name:string], [defaultValue:Mixed]):object default method',
     function () {
         
-        var assert = require('chai').assert,
-            MODEL = use("index.js"),
+        var MODEL = use("index.js"),
             defaultValue = {
                 authToken: '00authtoken01',
                 role: 'admin',
@@ -12,7 +11,7 @@ describe('datamixer(name, defaultValue) default method',
             };
         
         MODEL.define('Session', {
-                type: Model.type('object').
+                type: MODEL.type('object').
                         schema({
                             authToken: 'string',
                             role: 'string',
