@@ -2,7 +2,7 @@
 
 module.exports = {
     '@config': {
-        options: false,
+        options: [],
         min: 0,
         max: 0
     },
@@ -15,6 +15,13 @@ module.exports = {
         
         targetConfig.options = config.options.slice(0);
         
+    },
+    
+    options: function (options) {
+        if (options instanceof Array) {
+            return options.slice(0);
+        }
+        return this.config.options;
     },
     
     cast: function (data) {

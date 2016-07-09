@@ -23,7 +23,10 @@ describe('datamixer API',
 describe('datamixer default types',
     function () {
         require('./type/text.js');
+        require('./type/integer.js');
+        require('./type/float.js');
         require('./type/numeric.js');
+        
     });
 
 describe('datamixer processor',

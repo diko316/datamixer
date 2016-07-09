@@ -3,12 +3,12 @@
 var type = require('type-caster'),
     number = type('number');
     
-    
+// count digits Math.log(-99) * Math.LOG10E + 1 | 0
     
 module.exports = number.extend({
     
             '@config': {
-                precision: 0,
+                precision: 2,
             },
             
             '@clone': function (target, superClone) {
@@ -27,7 +27,7 @@ module.exports = number.extend({
                 data = number.cast(data);
                 if (typeof data === 'number') {
                     return precision ?
-                                data.toFixed(precision) : data;
+                                data.toFixed(precision) : data.toString(10);
                 }
                 return void(0);
             },
@@ -36,7 +36,7 @@ module.exports = number.extend({
                 if (typeof places === 'number' && isFinite(places)) {
                     return Math.max(places, 0);
                 }
-                return this.config.max;
+                return this.config.precision;
             }
             
         });
