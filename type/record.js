@@ -1,11 +1,14 @@
 'use strict';
 
-var MODEL = require('../model.js');
+var INSTANTIATE = require('../instantiate.js'),
+    MODEL = require('../model.js'),
+    Base = MODEL.Model;
 
 function cast(data) {
     /*jshint validthis:true */
     var me = this;
     var Model;
+    
     if (me.$$mustFinalizeModel) {
         finalizeModel(me);
     }
@@ -13,13 +16,16 @@ function cast(data) {
     // use model type to cast data
     Model = me.config.model;
     
+    // return model
     if (data instanceof Model) {
         return data;
     }
-    else if (!Model.prototype['@type'].validate(data).error) {
+    // instantiate
+    else if (!(data instanceof Base) &&
+        !Model.prototype['@type'].validate(data).error) {
         return new Model(data);
     }
-    
+   
     return void(0);
 }
 
@@ -34,9 +40,14 @@ function validate(state, data) {
 
     Model = me.config.model;
     
-    if (data instanceof Model) {
-        state.error = false;
-        return;
+    if (data instanceof Base) {
+        if (data instanceof Model) {
+            state.error = false;
+        }
+        else {
+            state.error.model = 'Invalid instance of ' +
+                                    Model.prototype['@model'];
+        }
     }
     else {
         validation = Model.prototype['@type'].validate(data);
@@ -68,17 +79,25 @@ function model(name) {
 }
 
 function finalizeModel(typeInstance) {
-    var modelManager = MODEL,
-        config = typeInstance.config,
+    var config = typeInstance.config,
+        Model = MODEL,
         name = config.model;
         
-    if (modelManager.has(name)) {
-        config.model = modelManager.get(name);
+    if (typeInstance.$$mustFinalizeModel) {
+        
+    
+        if (typeof name === 'string' && INSTANTIATE.exist(name)) {
+            config.model = name = MODEL.get(name);
+        }
+        
         delete typeInstance.$$mustFinalizeModel;
+    
     }
-    else {
+    
+    if (!Model.is(name)) {
         throw new Error('unable to find Model [' + name + ']');
     }
+    
 }
 
 

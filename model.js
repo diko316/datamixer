@@ -36,7 +36,6 @@ function is(Class) {
 function createConstructor(properties, superclass) {
     var SuperClass = resolve(superclass),
         E = empty,
-        constructor = null,
         hasOwn = Object.prototype.hasOwnProperty;
     var prototype, name;
     
@@ -44,8 +43,8 @@ function createConstructor(properties, superclass) {
         
         SuperClass.apply(this, arguments);
         
-        if (constructor) {
-            constructor.apply(this, arguments);
+        if (hasOwn.call(prototype, 'initialize')) {
+            prototype.initialize.call(this);
         }
         
     }
@@ -75,13 +74,10 @@ function Model(defaultValue) {
         type = me['@type'];
         
     this.raw = defaultValue;
-    if (arguments.length && type.validate(defaultValue)) {
-        this.data = type.cast(defaultValue);
-    }
-    else {
-        this.data = type.cast();
-    }
-
+    
+    this.data = arguments.length && type.validate(defaultValue) ?
+                    type.cast(defaultValue) : type.cast();
+    
 }
 
 Model.prototype = {
@@ -91,6 +87,38 @@ Model.prototype = {
     raw: void(0),
     
     constructor: Model,
+    
+    id: function () {
+        var me = this,
+            O = Object.prototype;
+        var value;
+        
+        if (!O.hasOwnProperty.call(me, '@id')) {
+            value = me.data;
+            switch (O.toString.call(value)) {
+            case '[object RegExp]':
+            case '[object Function]':
+            case '[object Array]':
+            case '[object Object]':
+                value = value.id;
+                break;
+            case '[object Number]':
+                if (!isFinite(value)) {
+                    value = void(0);
+                }
+                break;
+            case '[object String]':
+                if (!value.length) {
+                    value = void(0);
+                }
+                break;
+            default:
+                value = void(0);
+            }
+            me['@id'] = value;
+        }
+        return me['@id'];
+    },
     
     valueOf: function (raw) {
         return raw === true ?

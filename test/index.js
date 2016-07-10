@@ -26,6 +26,8 @@ describe('datamixer default types',
         require('./type/integer.js');
         require('./type/float.js');
         require('./type/numeric.js');
+        require('./type/enum.js');
+        require('./type/record.js');
         
     });
 
