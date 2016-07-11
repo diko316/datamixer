@@ -76,12 +76,10 @@ function model(name) {
 
 function finalizeModel(typeInstance) {
     var Model = MODEL,
+        config = typeInstance.config,
         name = config.model;
-    var config;
         
     if (typeInstance.$$mustFinalizeModel) {
-        config = typeInstance.config;
-        
         if (typeof name === 'string' && INSTANTIATE.exist(name)) {
             config.model = name = MODEL.get(name);
         }

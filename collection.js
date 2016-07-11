@@ -101,8 +101,26 @@ Collection.prototype = {
         splice = null;
         return this;
     },
+
+/**
+ * By Key
+ */
+    get: function (id) {
+        var keys = this.keys,
+            l = keys.length;
+        
+        for (; l--;) {
+            if (keys[l] === id) {
+                return l in this ? this[l] : void(0);
+            }
+        }
+        return void(0);
+    },
     
-    insert: function (item, index) {
+/**
+ * By Item
+ */
+    add: function (item, index) {
         var me = this,
             Model = me['@model'],
             len = me.length;
@@ -134,15 +152,14 @@ Collection.prototype = {
     },
     
     remove: function (item) {
-        var index = this.indexOf(item);
-        
-        if (index !== -1) {
-            this.keys.splice(index, 1);
-            A.splice.call(this, index, 1);
-            this.length --;
-        }
+        return this.removeAt(
+                this.indexOf(item)
+            );
     },
-    
+
+/**
+ * By Index
+ */
     indexOf: function (item) {
         var me = this,
             l = me.length;
@@ -152,7 +169,20 @@ Collection.prototype = {
             }
         }
         return -1;
+    },
+    
+    removeAt: function (index) {
+        if (typeof index === 'number' && isFinite(index) &&
+            index >= 0 && index < this.length) {
+            this.keys.splice(index, 1);
+            A.splice.call(this, index, 1);
+            this.length --;
+            return index;
+        }
+        return -1;
     }
+    
+    
 };
 
 
