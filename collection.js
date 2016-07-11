@@ -46,6 +46,10 @@ function is(item) {
     return item instanceof Collection;
 }
 
+function uniqueEqual(item1, item2) {
+    return item1 === item2;
+}
+
 function Collection(items) {
     this.access = [];
     this.length = 0;
@@ -105,12 +109,12 @@ Collection.prototype = {
 /**
  * By Key
  */
-    get: function (id) {
+    get: function (key) {
         var keys = this.keys,
             l = keys.length;
         
         for (; l--;) {
-            if (keys[l] === id) {
+            if (keys[l] === key) {
                 return l in this ? this[l] : void(0);
             }
         }
@@ -155,6 +159,49 @@ Collection.prototype = {
         return this.removeAt(
                 this.indexOf(item)
             );
+    },
+    
+    normalize: function () {
+        var me = this,
+            keys = me.keys,
+            l = keys.length;
+        var sl, key;
+        
+        for (; l--;) {
+            key = keys[l];
+            sl = l;
+            for (; sl--;) {
+                if (key === keys[sl]) {
+                    me.removeAt(sl);
+                    l--;
+                }
+            }
+        }
+        
+        return this;
+    },
+    
+    unique: function (fn) {
+        var me = this,
+            l = me.length;
+        var sl, item;
+        
+        if (!(fn instanceof Function)) {
+            fn = uniqueEqual;
+        }
+        
+        for (; l--;) {
+            item = me[l];
+            sl = l;
+            for (; sl--;) {
+                if (fn.call(me, item, me[sl]) === true) {
+                    me.removeAt(sl);
+                    l--;
+                }
+            }
+        }
+        
+        return this;
     },
 
 /**
