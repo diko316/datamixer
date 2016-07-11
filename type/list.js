@@ -1,7 +1,7 @@
 'use strict';
 
 var COLLECTION = require('../collection.js'),
-    INSTANTIATE = require('../instantiate.js'),
+    MANAGER = require('../manager.js'),
     MODEL = require('../model.js');
 
 function finalizeModel(typeInstance) {
@@ -10,7 +10,7 @@ function finalizeModel(typeInstance) {
         name = config.model;
         
     if (typeInstance.$$mustFinalizeModel) {
-        if (typeof name === 'string' && INSTANTIATE.exist(name)) {
+        if (typeof name === 'string' && MANAGER.exist(name)) {
             config.model = name = MODEL.get(name);
         }
         
@@ -51,7 +51,8 @@ module.exports = {
     },
     
     validate: function (state, data) {
-        var Model, Base, l, item, type;
+        var O = Object.prototype;
+        var Model, Base, l, type, valid, hasOwn;
         
         finalizeModel(this);
         Base = this.config.model;
@@ -67,10 +68,25 @@ module.exports = {
             }
 
         }
+        else if (O.toString.call(data) === '[object Object]') {
+            type = Base.prototype['@type'];
+            hasOwn = O.hasOwnProperty;
+            for (l in data) {
+                if (hasOwn.call(data, l)) {
+                    valid = type.validate(data[l]);
+                    if (valid.error) {
+                        state.error = valid.error;
+                        state.blame[0] = l;
+                        return;
+                    }
+                }
+            }
+            state.error = false;
+        }
         else if (data instanceof Array) {
             type = Base.prototype['@type'];
             for (l = data.length; l--;) {
-                valid = type.validate(data);
+                valid = type.validate(data[l]);
                 if (valid.error) {
                     state.error = valid.error;
                     state.blame[0] = l;
@@ -80,5 +96,22 @@ module.exports = {
             state.error = false;
         }
     },
+    
+    model: function (name) {
+        if (name) {
+            if (typeof name === 'string') {
+                /*jshint validthis:true */
+                this.$$mustFinalizeModel = true;
+                return name;
+            }
+            else if (MODEL.is(name)) {
+                return name;
+            }
+            else {
+                throw new Error('invalid model parameter [' + name + ']');
+            }
+        }
+        return void(0);
+    }
     
 };

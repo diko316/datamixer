@@ -28,7 +28,7 @@ describe('datamixer default types',
         require('./type/numeric.js');
         require('./type/enum.js');
         require('./type/record.js');
-        
+        require('./type/list.js');
     });
 
 describe('datamixer processor',

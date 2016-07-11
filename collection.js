@@ -1,9 +1,10 @@
 'use strict';
 
 var EXPORTS = create,
-    INSTANTIATE = require('./instantiate.js'),
+    MANAGER = require('./manager.js'),
     MODEL = require('./model.js'),
-    A = Array.prototype;
+    A = Array.prototype,
+    O = Object.prototype;
 
 function empty() {
     
@@ -16,7 +17,7 @@ function create(model, items) {
     if (model instanceof Collection) {
         return new (model.constructor)(items);
     }
-    else if (typeof model === 'string' && INSTANTIATE.exist(model)) {
+    else if (typeof model === 'string' && MANAGER.exist(model)) {
         model = modelMgr.get(model);
     }
     
@@ -65,45 +66,77 @@ Collection.prototype = {
     load: function (items) {
         var me = this,
             keys = me.access,
-            splice = A.splice,
-            Model = me['@model'];
-        var l, item, len, id, type;
+            Arr = A,
+            splice = Arr.splice,
+            isObject = O.toString.call(items) === '[object Object]';
+            
+        var l, item, len, id, type, hasOwn, Model, ItemModel;
         
-        if (items instanceof Array) {
+        if (isObject || items instanceof Arr.constructor) {
             len = 0;
             l = me.length;
             splice.call(me, 0, l);
             splice.call(keys, 0, l);
+            Model = me['@model'];
             
-            for (l = items.length; l--;) {
-                item = items[l];
-                if (!(item instanceof Model)) {
-                    item = new Model(item);
+            if (items instanceof Collection) {
+                ItemModel = items['@model'];
+                // copy all items
+                if (Model === ItemModel ||
+                    ItemModel.prototype instanceof Model) {
+                    keys.push.apply(keys, items.access);
+                    Arr.push.apply(me, items);
                 }
-                
-                id = item.id();
-                type = typeof id;
-                if (type === 'string' ||
-                    (type === 'number' && isFinite(id))) {
-                    keys[l] = id;
-                    me[l] = item;
-                    len++;
+            }
+            else if (isObject) {
+                hasOwn = O.hasOwnProperty;
+                for (id in items) {
+                    if (!hasOwn.call(items, id)) {
+                        continue;
+                    }
+                    item = this.createRecord(items[id]);
+                    if (item) {
+                        keys[len] = id;
+                        me[len++] = item;
+                    }
                 }
-                else {
-                    keys.splice(l, 1);
-                    splice.call(me, l, 1);
+            }
+            else {
+                for (l = items.length; l--;) {
+                    item = this.createRecord(items[l]);
+                    if (item) {
+                        id = item.id();
+                        type = typeof id;
+                        if (type === 'string' ||
+                            (type === 'number' && isFinite(id))) {
+                            keys[l] = id;
+                            me[l] = item;
+                            len++;
+                        }
+                        else {
+                            keys.splice(l, 1);
+                            splice.call(me, l, 1);
+                        }
+                    }
                 }
                 
             }
+            
             me.length = len;
-            item = null;
-            id = null;
         }
         keys = null;
         me = null;
-        Model = null;
         splice = null;
         return this;
+    },
+    
+    createRecord: function (item) {
+        var Model = this['@model'];
+        
+        if (item instanceof Model) {
+            return item;
+        }
+        return new Model(item);
     },
 
 /**

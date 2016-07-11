@@ -2,10 +2,12 @@
 
 var TYPE = require('type-caster'),
     PROCESSOR = require('tee-back'),
-    EXPORTS = require('./instantiate.js'),
+    EXPORTS = require('./manager.js'),
+    COLLECTION = require('./collection.js'),
     MODEL = require('./model.js');
 
 module.exports = EXPORTS;
+EXPORTS.collection = COLLECTION;
 
 // define types
 TYPE.define('text', require('./type/text.js'));

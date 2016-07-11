@@ -1,6 +1,6 @@
 'use strict';
 
-var INSTANTIATE = require('../instantiate.js'),
+var MANAGER = require('../manager.js'),
     MODEL = require('../model.js'),
     Base = MODEL.Model;
 
@@ -80,7 +80,7 @@ function finalizeModel(typeInstance) {
         name = config.model;
         
     if (typeInstance.$$mustFinalizeModel) {
-        if (typeof name === 'string' && INSTANTIATE.exist(name)) {
+        if (typeof name === 'string' && MANAGER.exist(name)) {
             config.model = name = MODEL.get(name);
         }
         
