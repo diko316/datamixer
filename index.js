@@ -14,6 +14,7 @@ TYPE.define('integer', require('./type/integer.js'));
 TYPE.define('float', require('./type/float.js'));
 TYPE.define('enum', require('./type/enum.js'));
 TYPE.define('record', require('./type/record.js'));
+TYPE.define('list', require('./type/list.js'));
 
 
 // define processors

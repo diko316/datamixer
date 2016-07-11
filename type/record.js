@@ -9,9 +9,7 @@ function cast(data) {
     var me = this;
     var Model;
     
-    if (me.$$mustFinalizeModel) {
-        finalizeModel(me);
-    }
+    finalizeModel(me);
     
     // use model type to cast data
     Model = me.config.model;
@@ -34,9 +32,7 @@ function validate(state, data) {
     var me = this;
     var Model, validation, name, hasOwn;
     
-    if (me.$$mustFinalizeModel) {
-        finalizeModel(me);
-    }
+    finalizeModel(me);
 
     Model = me.config.model;
     
@@ -79,13 +75,13 @@ function model(name) {
 }
 
 function finalizeModel(typeInstance) {
-    var config = typeInstance.config,
-        Model = MODEL,
+    var Model = MODEL,
         name = config.model;
+    var config;
         
     if (typeInstance.$$mustFinalizeModel) {
+        config = typeInstance.config;
         
-    
         if (typeof name === 'string' && INSTANTIATE.exist(name)) {
             config.model = name = MODEL.get(name);
         }
@@ -104,6 +100,15 @@ function finalizeModel(typeInstance) {
 module.exports = {
     config: {
         model: void(0)
+    },
+    '@clone': function (target, superClone) {
+        var config = this.config,
+            targetConfig = target.config;
+            
+        superClone();
+        
+        targetConfig.model = config.model;
+        
     },
     cast: cast,
     validate: validate,
