@@ -34,6 +34,6 @@
     "immutable": "^3.8.1",
     "interesting": "^0.0.3",
     "tee-back": "^0.0.6",
-    "type-caster": "^0.1.5"
+    "type-caster": "^0.1.6"
   }
 }

@@ -70,7 +70,7 @@ Collection.prototype = {
             splice = Arr.splice,
             isObject = O.toString.call(items) === '[object Object]';
             
-        var l, item, len, id, type, hasOwn, Model, ItemModel;
+        var l, item, len, id, type, hasOwn, primary, unique, Model, ItemModel;
         
         if (isObject || items instanceof Arr.constructor) {
             len = 0;
@@ -78,6 +78,8 @@ Collection.prototype = {
             splice.call(me, 0, l);
             splice.call(keys, 0, l);
             Model = me['@model'];
+            primary = null;
+            unique = {};
             
             if (items instanceof Collection) {
                 ItemModel = items['@model'];
