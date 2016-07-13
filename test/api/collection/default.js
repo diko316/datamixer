@@ -1,6 +1,6 @@
 'use strict';
 
-describe('DATAMIXER.collection([model:string|Model], [data:mixed])',
+describe('DATAMIXER.collection([model:string|Model], [data:mixed]):Collection',
     function () {
         
         var MODEL = use('index.js'),

@@ -14,6 +14,14 @@ describe('DATAMIXER.collection',
                         })
         });
         
+        MODEL.define('TestCollectionRecordStringKey', {
+            type: TYPE('object').
+                        schema({
+                            id: 'string',
+                            name: 'string'
+                        })
+        });
+        
         require('./default.js');
         require('./is.js');
         
@@ -21,6 +29,11 @@ describe('DATAMIXER.collection',
             function () {
                 
                 require('./Collection/load.js');
+                require('./Collection/get.js');
+                require('./Collection/indexOf.js');
+                require('./Collection/insert.js');
+                require('./Collection/remove.js');
+                require('./Collection/removeAt.js');
                 
             });
         

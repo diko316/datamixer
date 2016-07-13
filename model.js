@@ -41,11 +41,25 @@ function createConstructor(properties, superclass) {
     
     function Model() {
         
-        SuperClass.apply(this, arguments);
+        var Class = Model,
+            E = empty,
+            instance = this;
+            
+        if (instance instanceof Class) {
         
-        if (hasOwn.call(prototype, 'initialize')) {
-            prototype.initialize.call(this);
+            SuperClass.apply(instance, arguments);
+            
+            if (hasOwn.call(prototype, 'initialize')) {
+                prototype.initialize.call(instance);
+            }
+            
         }
+        else {
+            E.prototype = Class.prototype;
+            instance = new E();
+            Class.apply(instance, arguments);
+        }
+        return instance;
         
     }
     
@@ -118,6 +132,10 @@ Model.prototype = {
             me['@id'] = value;
         }
         return me['@id'];
+    },
+    
+    isValid: function () {
+        return this['@type'].validate(this.data);
     },
     
     valueOf: function (raw) {

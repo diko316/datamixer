@@ -1,7 +1,7 @@
 'use strict';
 
 
-describe('DATAMIXER.collection.is([data:Collection])',
+describe('DATAMIXER.collection.is([data:Collection]):boolean',
     function () {
         
         var MODEL = use('index.js'),

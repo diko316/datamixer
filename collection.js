@@ -144,10 +144,16 @@ Collection.prototype = {
     },
     
     createRecord: function (item) {
-        var Model = this['@model'];
+        var Model = this['@model'],
+            Base = MODEL.Model;
         
-        if (item instanceof Model) {
-            return item;
+        if (item instanceof Base) {
+            if (item instanceof Model) {
+                return item;
+            }
+            else {
+                item = item.valueOf();
+            }
         }
         return new Model(item);
     },
@@ -176,7 +182,7 @@ Collection.prototype = {
  * By Key
  */
     get: function (key) {
-        var keys = this.keys,
+        var keys = this.access,
             l = keys.length;
         
         for (; l--;) {
@@ -204,26 +210,34 @@ Collection.prototype = {
             item = new Model(item);
         }
         
-        id = me.createId(item, id);
-        if (!primaryIndex.hasOwnProperty(id) && id !== null) {
-            primaryIndex[id] = true;
-            if (index < len) {
-                keys.splice(index, id);
+        if (!item.isValid().error) {
+            id = me.createId(item, id);
+            
+            if (!primaryIndex.hasOwnProperty(id) && id !== null) {
+                primaryIndex[id] = true;
+                if (index >= len) {
+                    keys[index] = id;
+                    me[index] = item;
+                }
+                else {
+                    keys.splice(index, 0, id);
+                    A.splice.call(me, index, 0, item);
+                }
+                
+                me.length++;
+                return item;
             }
-            else {
-                keys[index] = id;
-            }
-            A.splice.call(me, index, item);
-            me.length = keys.length;
-            return index;
         }
-        return -1;
+        
+        return void(0);
     },
     
     remove: function (item) {
-        return this.removeAt(
-                this.indexOf(item)
-            );
+        var index = this.indexOf(item);
+        if (index !== -1) {
+            this.removeAt(index);
+        }
+        return index;
     },
 
     unique: function (fn) {
@@ -267,16 +281,17 @@ Collection.prototype = {
         var me = this,
             keys = me.access,
             primaryIndex = me.access.$$index;
-            
+        var item;
         if (typeof index === 'number' && isFinite(index) &&
             index >= 0 && index < me.length) {
             delete primaryIndex[keys.indexOf(index)];
             keys.splice(index, 1);
+            item = me[index];
             A.splice.call(me, index, 1);
             me.length --;
-            return index;
+            return item;
         }
-        return -1;
+        return void(0);
     },
     
 /**
