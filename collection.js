@@ -40,6 +40,7 @@ function extend(SuperClass, Model) {
     E.prototype = SuperClass.prototype;
     Collection.prototype = prototype = new E();
     prototype['@model'] = Model;
+    
     return Collection;
 }
 
@@ -52,17 +53,24 @@ function uniqueEqual(item1, item2) {
 }
 
 function Collection(items) {
-    this.access = [];
+    var access = [];
+    
+    access.$$index = {};
+    this.access = access;
     this.length = 0;
     if (items) {
         this.load(items);
     }
+    
 }
 
 
 Collection.prototype = {
-    constructor: Collection,
+    
     access: void(0),
+    
+    constructor: Collection,
+    
     load: function (items) {
         var me = this,
             keys = me.access,
@@ -70,16 +78,15 @@ Collection.prototype = {
             splice = Arr.splice,
             isObject = O.toString.call(items) === '[object Object]';
             
-        var l, item, len, id, type, hasOwn, primary, unique, Model, ItemModel;
+        var l, item, len, id, hasOwn, Model, ItemModel, isEmpty, index;
         
         if (isObject || items instanceof Arr.constructor) {
+            keys.$$index = index = {};
             len = 0;
             l = me.length;
             splice.call(me, 0, l);
             splice.call(keys, 0, l);
             Model = me['@model'];
-            primary = null;
-            unique = {};
             
             if (items instanceof Collection) {
                 ItemModel = items['@model'];
@@ -96,8 +103,9 @@ Collection.prototype = {
                     if (!hasOwn.call(items, id)) {
                         continue;
                     }
-                    item = this.createRecord(items[id]);
+                    item = me.createRecord(items[id]);
                     if (item) {
+                        index[id] = true;
                         keys[len] = id;
                         me[len++] = item;
                     }
@@ -105,19 +113,22 @@ Collection.prototype = {
             }
             else {
                 for (l = items.length; l--;) {
-                    item = this.createRecord(items[l]);
+                    item = me.createRecord(items[l]);
                     if (item) {
-                        id = item.id();
-                        type = typeof id;
-                        if (type === 'string' ||
-                            (type === 'number' && isFinite(id))) {
+                        id = me.createId(item, null);
+                        isEmpty = id === null;
+                        if (isEmpty || index.hasOwnProperty(id)) {
+                            if (!isEmpty) {
+                                me[keys.indexOf(id)] = item;
+                            }
+                            keys.splice(l, 1);
+                            splice.call(me, l, 1);
+                        }
+                        else {
+                            index[id] = true;
                             keys[l] = id;
                             me[l] = item;
                             len++;
-                        }
-                        else {
-                            keys.splice(l, 1);
-                            splice.call(me, l, 1);
                         }
                     }
                 }
@@ -140,7 +151,27 @@ Collection.prototype = {
         }
         return new Model(item);
     },
-
+    
+    createId: function (item, id) {
+        var type;
+        
+        if (id === null || typeof id === 'undefined') {
+            id = item.id();
+        }
+        
+        type = typeof id;
+        
+        if ((type === 'string' && type) ||
+            (type === 'number' && isFinite(id))) {
+            
+            return id;
+        
+        }
+        
+        return null;
+       
+    },
+    
 /**
  * By Key
  */
@@ -159,11 +190,12 @@ Collection.prototype = {
 /**
  * By Item
  */
-    add: function (item, index) {
+    insert: function (item, index, id) {
         var me = this,
             Model = me['@model'],
-            len = me.length;
-        var id, type, keys;
+            len = me.length,
+            keys = me.access,
+            primaryIndex = keys.$$index;
         
         index = typeof index === 'number' && isFinite(index) ?
                     Math.max(0, index) : len;
@@ -172,11 +204,9 @@ Collection.prototype = {
             item = new Model(item);
         }
         
-        id = item.id();
-        type = typeof id;
-        if (type === 'string' ||
-            (type === 'number' && isFinite(id))) {
-            keys = me.keys;
+        id = me.createId(item, id);
+        if (!primaryIndex.hasOwnProperty(id) && id !== null) {
+            primaryIndex[id] = true;
             if (index < len) {
                 keys.splice(index, id);
             }
@@ -184,7 +214,7 @@ Collection.prototype = {
                 keys[index] = id;
             }
             A.splice.call(me, index, item);
-            this.length = keys.length;
+            me.length = keys.length;
             return index;
         }
         return -1;
@@ -195,27 +225,7 @@ Collection.prototype = {
                 this.indexOf(item)
             );
     },
-    
-    normalize: function () {
-        var me = this,
-            keys = me.keys,
-            l = keys.length;
-        var sl, key;
-        
-        for (; l--;) {
-            key = keys[l];
-            sl = l;
-            for (; sl--;) {
-                if (key === keys[sl]) {
-                    me.removeAt(sl);
-                    l--;
-                }
-            }
-        }
-        
-        return this;
-    },
-    
+
     unique: function (fn) {
         var me = this,
             l = me.length;
@@ -254,19 +264,42 @@ Collection.prototype = {
     },
     
     removeAt: function (index) {
+        var me = this,
+            keys = me.access,
+            primaryIndex = me.access.$$index;
+            
         if (typeof index === 'number' && isFinite(index) &&
-            index >= 0 && index < this.length) {
-            this.keys.splice(index, 1);
-            A.splice.call(this, index, 1);
-            this.length --;
+            index >= 0 && index < me.length) {
+            delete primaryIndex[keys.indexOf(index)];
+            keys.splice(index, 1);
+            A.splice.call(me, index, 1);
+            me.length --;
             return index;
         }
         return -1;
+    },
+    
+/**
+ * conversion
+ */
+    toObject: function () {
+        var me = this,
+            len = me.length,
+            keys = me.keys,
+            c = -1,
+            created = {};
+        var key;
+        
+        for (; len--;) {
+            key = keys[++c];
+            created[key] = me[c];
+        }
+        
+        return created;
     }
-    
-    
 };
 
 
 module.exports = EXPORTS;
+EXPORTS.Class = Collection;
 EXPORTS.is = is;
