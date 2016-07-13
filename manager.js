@@ -245,6 +245,26 @@ function getDefinition(name) {
     return list.hasOwnProperty(name) ? list[name] : void(0);
 }
 
+function get(name) {
+    
+    var definition = getDefinition(name);
+    var Model;
+    
+    if (definition) {
+        
+        Model = definition.declared ?
+                    MODEL.get(name) : declare(name);
+                    
+        if (Model) {
+            return Model;
+        }
+        
+        throw new Error('unable to declare Model [' + name + ']');
+    }
+    
+    return void(0);
+}
+
 function instantiate(name, data) {
     var definition = getDefinition(name);
     var Model;
@@ -320,6 +340,7 @@ function createIdMethod(item) {
 
 module.exports = EXPORTS['default'] = EXPORTS;
 EXPORTS.define = define;
+EXPORTS.get = get;
 EXPORTS.type = TYPE;
 EXPORTS.subscribe = subscribe;
 EXPORTS.exist = exist;

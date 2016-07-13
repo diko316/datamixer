@@ -18,6 +18,8 @@ describe('datamixer API',
         require('./api/define.js');
         require('./api/subscribe.js');
         require('./api/exist.js');
+        
+        require('./api/collection/index.js');
     });
 
 describe('datamixer default types',
