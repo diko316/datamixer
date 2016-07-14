@@ -216,15 +216,14 @@ Collection.prototype = {
             if (!primaryIndex.hasOwnProperty(id) && id !== null) {
                 primaryIndex[id] = true;
                 if (index >= len) {
-                    keys[index] = id;
-                    me[index] = item;
+                    keys[len] = id;
+                    me[len] = item;
+                    me.length++;
                 }
                 else {
                     keys.splice(index, 0, id);
                     A.splice.call(me, index, 0, item);
                 }
-                
-                me.length++;
                 return item;
             }
         }
@@ -284,11 +283,10 @@ Collection.prototype = {
         var item;
         if (typeof index === 'number' && isFinite(index) &&
             index >= 0 && index < me.length) {
-            delete primaryIndex[keys.indexOf(index)];
+            delete primaryIndex[keys[index]];
             keys.splice(index, 1);
             item = me[index];
             A.splice.call(me, index, 1);
-            me.length --;
             return item;
         }
         return void(0);

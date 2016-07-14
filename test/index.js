@@ -19,7 +19,12 @@ describe('datamixer API',
         require('./api/subscribe.js');
         require('./api/exist.js');
         
-        require('./api/collection/index.js');
+        
+    });
+
+describe('datamixer collection',
+    function () {
+        require('./collection/index.js');
     });
 
 describe('datamixer default types',
@@ -34,6 +39,11 @@ describe('datamixer default types',
     });
 
 describe('datamixer processor',
+    function () {
+    });
+
+
+describe('datamixer Model',
     function () {
     });
 

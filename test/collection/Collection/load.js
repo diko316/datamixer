@@ -39,6 +39,9 @@ describe('collection.load([data:mixed]):Collection',
                 assert(result[1] instanceof records['@model'],
                     'should have inserted second record to collection');
                 
+                assert(records.length === 2,
+                    'should have its "length" property set to current records inserted');
+                
             });
         
     });
