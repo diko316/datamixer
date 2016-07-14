@@ -12,15 +12,7 @@ global.use = function (id) {
     return require(path.resolve(mainPath, id));
 };
 
-describe('datamixer API',
-    function () {
-        require('./api/default.js');
-        require('./api/define.js');
-        require('./api/subscribe.js');
-        require('./api/exist.js');
-        
-        
-    });
+
 
 describe('datamixer collection',
     function () {
@@ -43,7 +35,16 @@ describe('datamixer processor',
     });
 
 
+describe('datamixer API',
+    function () {
+        require('./api/default.js');
+        require('./api/define.js');
+        require('./api/subscribe.js');
+        require('./api/exist.js');
+    });
+
 describe('datamixer Model',
     function () {
+        require('./model/index.js');
     });
 

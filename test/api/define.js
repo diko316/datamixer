@@ -1,6 +1,6 @@
 'use strict';
 
-describe('DATAMIXER.define([name:string], [config:object]):object',
+describe('DATAMIXER.define([name:string], [config:object]):DATAMIXER',
     function () {
         
         var MODEL = use("index"),

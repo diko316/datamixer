@@ -1,6 +1,6 @@
 'use strict';
 
-describe('DATAMIXER([name:string], [defaultValue:Mixed]):object',
+describe('DATAMIXER([name:string], [defaultValue:Mixed]):Model',
     function () {
         
         var MODEL = use("index.js"),
