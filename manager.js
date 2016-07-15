@@ -330,7 +330,13 @@ function createIdMethod(item) {
     return function () {
         var me = this;
         if (!Object.prototype.hasOwnProperty.call(me, '@id')) {
-            me['@id'] = item.call(me, me.data, me.raw);
+            try {
+                me['@id'] = item.call(me, me.data, me.raw);
+            }
+            catch (e) {
+                console.warn(e);
+                me['@id'] = void(0);
+            }
         }
         return me['@id'];
     };

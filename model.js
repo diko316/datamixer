@@ -115,19 +115,25 @@ Model.prototype = {
             case '[object Array]':
             case '[object Object]':
                 value = value.id;
-                break;
-            case '[object Number]':
-                if (!isFinite(value)) {
-                    value = void(0);
-                }
-                break;
-            case '[object String]':
-                if (!value.length) {
-                    value = void(0);
-                }
-                break;
+            /* fall through */
             default:
-                value = void(0);
+                switch (O.toString.call(value)) {
+                case '[object Number]':
+                    if (!isFinite(value)) {
+                        value = void(0);
+                    }
+                    break;
+                case '[object String]':
+                    if (!value.length) {
+                        value = void(0);
+                    }
+                    break;
+                case '[object Boolean]':
+                    value = value ? 1 : 0;
+                    break;
+                default:
+                    value = void(0);
+                }
             }
             me['@id'] = value;
         }
