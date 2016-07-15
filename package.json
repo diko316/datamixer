@@ -1,6 +1,6 @@
 {
   "name": "datamixer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Pluggable data mixer and type juggler",
   "main": "index.js",
   "scripts": {
