@@ -5,11 +5,13 @@ var EVENTS = require('../../model.js').events;
 module.exports = function (data, process, meta) {
     var name = meta.name,
         method = meta.method,
-        typeOverride = process.eventType,
-        type = typeOverride && typeof typeOverride === 'string' ?
-                    typeOverride : name + ':' + method;
-
-    //console.log('type: ', meta.name + ':' + meta.method, 'event: ', event, ' meta: ', meta);
+        type = process.eventType;
+    
+    // apply override if valid string
+    if (!type || typeof type !== 'string') {
+        type = name + ':' + method;
+    }
+    
     EVENTS.publish(type, {
                 type: type,
                 model: name,
