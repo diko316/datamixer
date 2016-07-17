@@ -11,7 +11,7 @@ describe('DATAMIXER.subscribe([event:string], [callback:function]):function',
                                 id: 'integer',
                                 name: 'text'
                             },
-                        '@customEvent': 'event.dispatch'
+                        '@customEvent': 'model.event.dispatch'
                     });
         
         it('should subscribe all record events [event:string.format(modelName + ":" + modelMethod)]',

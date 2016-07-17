@@ -20,10 +20,10 @@ TYPE.define('list', require('./type/list.js'));
 
 
 // define processors
-PROCESSOR.define('data.fork', require('./processor/data/fork.js'));
-PROCESSOR.define('data.validate', require('./processor/data/validate.js'));
-PROCESSOR.define('event.dispatch', require('./processor/event/dispatch.js'));
-PROCESSOR.define('http.request', require('./processor/http/request.js'));
+PROCESSOR.define('model.data.fork', require('./processor/data/fork.js'));
+PROCESSOR.define('model.data.validate', require('./processor/data/validate.js'));
+PROCESSOR.define('model.event.dispatch', require('./processor/event/dispatch.js'));
+PROCESSOR.define('model.http.request', require('./processor/http/request.js'));
 
 
 // define default models

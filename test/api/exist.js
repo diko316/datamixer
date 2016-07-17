@@ -10,7 +10,7 @@ describe('DATAMIXER.exist([modelname:string]):boolean',
                                 id: 'integer',
                                 name: 'text'
                             },
-                        '@customEvent': 'event.dispatch'
+                        '@customEvent': 'model.event.dispatch'
                     });
         
         it('should return true if Model named [modelname:string] exists',
